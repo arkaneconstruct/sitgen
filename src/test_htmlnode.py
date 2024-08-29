@@ -1,6 +1,6 @@
 import unittest
-
-from htmlnode import HTMLNode, LeafNode, ParentNode
+from textnode import TextNode
+from htmlnode import HTMLNode, LeafNode, ParentNode, text_node_to_html_node
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -57,6 +57,23 @@ class TestParentNode(unittest.TestCase):
         result = outer_parent.to_html()
         expected = "<div><p>Regular text<em>Emphasized text</em></p></div>"
         assert result == expected
+
+class TestTextToHTMLNode(unittest.TestCase):
+    def invalid_type(self):
+        with self.assertRaises(Exception):
+            x = TextNode(text="Welcome.",text_type="backflip")
+            testNode = text_node_to_html_node(x)
+            testNode.to_html()
+
+    def test_text(self):
+        x = TextNode(text="Welcome.",text_type="text")
+        testNode = text_node_to_html_node(x)
+        assert testNode.to_html() == "Welcome."
+    
+    def test_link(self):
+        x = TextNode(text="Welcome.",text_type="link",url="google.com")
+        testNode = text_node_to_html_node(x)
+        assert testNode.tag == "a" and testNode.props == {"href":x.url}
     
 if __name__ == "__main__":
     unittest.main()
